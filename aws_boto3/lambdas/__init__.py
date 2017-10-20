@@ -1,22 +1,14 @@
 from botocore.exceptions import ClientError
 
-from aws_boto3.common import boto_client, dict_to_str, object_search
+from aws_boto3.common import boto_client, dict_to_str
 
 from aws_boto3.iam.roles import get_role_arn
+from aws_boto3.lambdas.utils import lambda_lookup, lambda_create, publish_version
+from aws_boto3.utils import run_client
 
 
 @boto_client('lambda')
-def lambda_lookup(name, return_attr='FunctionArn', client=None, region=None):
-    return object_search(
-        client=client,
-        paginator='list_functions',
-        query="Functions[?FunctionName == '{}'].{}".format(name, return_attr),
-        return_single=True
-    )
-
-
-@boto_client('lambda')
-def lambda_invoke(function_name, payload=None, region=None, client=None):
+def lambda_invoke(function_name, payload=None, region=None, client=None, *args, **kwargs):
     kwargs = {'FunctionName': function_name}
     if payload:
         kwargs['Payload'] = dict_to_str(payload)
@@ -29,50 +21,11 @@ def lambda_invoke(function_name, payload=None, region=None, client=None):
     return response
 
 
-@boto_client('lambda')
-def lambda_create(function_definition, client=None, region=None):
-    status = {
-        'status': None,
-        'exists': False
-    }
-    try:
-        response = client.create_function(**function_definition)
-        status['status'] = 'Created'
-        status['exists'] = True
-        status['response'] = response
-    except ClientError as e:
-        raise e
-    return {'lambda_create': status}
-
-
-@boto_client('lambda')
-def publish_version(function_name, version, alias, region=None, client=None):
-    response = {'actions': []}
-    publish_response = client.publish_version(
-        FunctionName=function_name,
-        Description=version
-    )
-    response['lambda_version'] = publish_response.get('Version')
-    response['actions'].append({'publish_version': publish_response})
-    try:
-        alias_response = client.create_alias(
-            FunctionName=function_name,
-            Name=alias,
-            FunctionVersion=response['lambda_version']
-        )
-        response['actions'].append({'create_alias': alias_response})
-    except ClientError as e:
-        if 'Alias already exists' not in str(e):
-            # TODO
-            raise e
-    response['alias'] = alias
-    return response
-
-
 def lambda_sync_function(function_name, handler, role_name, code, region=None, runtime='python2.7',
                          description=None, timeout=None, memory_size=None, publish=True,
                          vpc_config=None, dead_letter_config=None, environment=None,
-                         kms_key_arn=None, tracing_config=None, tags=None, version=None, alias=None):
+                         kms_key_arn=None, tracing_config=None, tags=None, version=None, alias=None,
+                         make_log_group=True):
     role = get_role_arn(role_name, region=region)
     status = {
         'function_name': function_name,
@@ -115,5 +68,19 @@ def lambda_sync_function(function_name, handler, role_name, code, region=None, r
         published = publish_version(function_name, version, alias, region)
         status['actions'].extend(published.pop('actions'))
         status.update(published)
+
+    if make_log_group:
+        try:
+            run_client(
+                service='logs',
+                function='create_log_group',
+                region=region,
+                payload={
+                    'logGroupName': '/aws/lambda/{}'.format(function_name)
+                }
+            )
+        except ClientError as e:
+            if 'ResourceAlreadyExistsException' not in str(e):
+                raise e
 
     return status
