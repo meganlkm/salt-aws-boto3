@@ -1,6 +1,8 @@
 import logging
 
-from aws_boto3.common import boto_client, object_search
+from aws_decorators import boto_client
+
+from aws_boto3.common import object_search
 
 logger = logging.getLogger(__name__)
 
