@@ -2,9 +2,9 @@ from botocore.exceptions import ClientError
 
 from aws_boto3.common import boto_client, dict_to_str
 
+from aws_boto3.cloudwatch import cw_ensure_log_stream
 from aws_boto3.iam.roles import get_role_arn
 from aws_boto3.lambdas.utils import lambda_lookup, lambda_create, publish_version
-from aws_boto3.utils import run_client
 
 
 @boto_client('lambda')
@@ -70,17 +70,12 @@ def lambda_sync_function(function_name, handler, role_name, code, region=None, r
         status.update(published)
 
     if make_log_group:
-        try:
-            run_client(
-                service='logs',
-                function='create_log_group',
-                region=region,
-                payload={
-                    'logGroupName': '/aws/lambda/{}'.format(function_name)
-                }
+        status['actions'].append(
+            cw_ensure_log_stream(
+                log_group_name='/aws/lambda/{}'.format(function_name),
+                log_stream_name='/aws/lambda/{}'.format(function_name),
+                region=None
             )
-        except ClientError as e:
-            if 'ResourceAlreadyExistsException' not in str(e):
-                raise e
+        )
 
     return status
