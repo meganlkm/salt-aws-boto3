@@ -1,6 +1,7 @@
+from aws_decorators import boto_client
 from botocore.exceptions import ClientError
 
-from aws_boto3.common import boto_client, dict_to_str, object_search
+from aws_boto3.common import dict_to_str, object_search
 from aws_boto3.lookup import lookup
 
 

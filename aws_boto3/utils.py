@@ -1,4 +1,4 @@
-from aws_boto3.common import get_client
+from aws_decorators import get_client
 
 
 def run_client(service, function, region=None, payload=None):

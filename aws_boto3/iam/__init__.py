@@ -1,4 +1,5 @@
-from aws_boto3.common import boto_client
+from aws_decorators import boto_client
+
 from aws_boto3.iam.policies import create_policy, get_policy_arn
 from aws_boto3.iam.roles import attach_role_policy, create_role, detach_role_policy, get_attached_policies, get_role_arn
 

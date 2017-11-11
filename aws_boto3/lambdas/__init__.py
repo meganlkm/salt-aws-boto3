@@ -1,7 +1,7 @@
+from aws_decorators import boto_client
 from botocore.exceptions import ClientError
 
-from aws_boto3.common import boto_client, dict_to_str
-
+from aws_boto3.common import dict_to_str
 from aws_boto3.iam.roles import get_role_arn
 from aws_boto3.lambdas.utils import lambda_lookup, lambda_create, publish_version
 from aws_boto3.utils import run_client
