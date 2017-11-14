@@ -14,3 +14,10 @@ pip-jmespath:
     - reload_modules: True
     - require:
       - pkg: python-pip
+
+pip-aws-decorators:
+  pip.installed:
+    - name: aws-decorators
+    - reload_modules: True
+    - require:
+      - pkg: python-pip
