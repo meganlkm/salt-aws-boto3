@@ -10,7 +10,7 @@ Use boto3 for AWS orchestration with Salt.
 
 ---
 
-## <a name="install"></a> Install
+## <a name="install"></a> Pypi Install
 
 ```bash
 pip install salt-aws-boto3
@@ -26,7 +26,7 @@ pip install salt-aws-boto3
 * run `salt '*' saltutil.sync_modules`
 
 
-## <a name="py-setup"></a> Use at as a python package
+## <a name="py-setup"></a> Use as a python package
 
 ```bash
 [sudo] pip install virtualenv
