@@ -25,7 +25,7 @@ os.chdir(os.path.normpath(BASEDIR))
 
 
 setup(
-    name='aws-boto3',
+    name='salt-aws-boto3',
     version=VERSION,
     packages=['aws_boto3'],
     include_package_data=True,
