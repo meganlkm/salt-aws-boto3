@@ -1,5 +1,5 @@
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
@@ -27,7 +27,7 @@ os.chdir(os.path.normpath(BASEDIR))
 setup(
     name='salt-aws-boto3',
     version=VERSION,
-    packages=['aws_boto3'],
+    packages=find_packages(),
     include_package_data=True,
     description='Use boto3 for AWS orchestration with Salt.',
     long_description='Use boto3 for AWS orchestration with Salt.',
