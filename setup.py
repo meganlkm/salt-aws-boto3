@@ -1,11 +1,13 @@
 import os
 from setuptools import setup, find_packages
 
+# allow setup.py to be run from any path
+os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
+
 BASEDIR = os.path.dirname(os.path.abspath(__file__))
 VERSION = open(os.path.join(BASEDIR, 'VERSION')).read().strip()
 REQUIREMENTS = []
 DEPENDENCY_LINKS = []
-
 
 with open(os.path.join(BASEDIR, 'requirements.pip')) as fp:
     lines = fp.readlines()
@@ -23,15 +25,27 @@ os.chdir(os.path.normpath(BASEDIR))
 
 
 setup(
-    name='aws_boto3',
+    name='aws-boto3',
     version=VERSION,
-    packages=find_packages(),
+    packages=['aws_boto3'],
     include_package_data=True,
     description='Use boto3 for AWS orchestration with Salt.',
     long_description='Use boto3 for AWS orchestration with Salt.',
     url='https://github.com/intuitivetechnologygroup/salt-aws-boto3',
     author='meganlkm',
-    author_email='megan.lkm@gmail.com',
+    author_email='devops@intuitivetech.com',
     install_requires=REQUIREMENTS,
-    dependency_links=DEPENDENCY_LINKS
+    dependency_links=DEPENDENCY_LINKS,
+    keywords=[
+        'aws',
+        'saltstack'
+    ],
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python',
+        'Topic :: System :: Software Distribution',
+        'Topic :: Utilities'
+    ]
 )
